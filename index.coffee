@@ -36,9 +36,9 @@ fileHandler = (root, fileStat, next) ->
 
 
 # 应用规则
-applyRules = (filePath, next) ->
+applyRules = (filePath) ->
     return readFile(filePath, 'utf-8').then((data) ->
-        rules.applyRules(data.toString())
+        rules.applyRules(data.toString()).then(Promise.resolve())
     )
 
 
