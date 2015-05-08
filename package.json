@@ -1,16 +1,17 @@
 {
-    "fekit_extension_command_name":"hfcheck",
-    "name": "fekit-extension-hfcheck",
-    "version": "0.0.1",
-    "description": "",
-    "dependencies": {},
-    "main": "index.js",
-    "scripts": {},
-    "repository": "",
-    "author": "",
-    "license": "BSD",
-    "scripts":{
-        "postinstall":"node ./scripts/postinstall.js",
-        "preuninstall":"node ./scripts/preuninstall.js"
-    }
+  "fekit_extension_command_name": "hfcheck",
+  "name": "fekit-extension-hfcheck",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "walk": "^2.3.9"
+  },
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./scripts/postinstall.js",
+    "preuninstall": "node ./scripts/preuninstall.js"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD"
 }

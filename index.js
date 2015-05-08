@@ -5,5 +5,11 @@ exports.set_options = function( optimist ){
 }
 
 exports.run = function( options ){
-
+    run();
 }
+
+function run() {
+    console.log('xx');
+}
+
+run();
