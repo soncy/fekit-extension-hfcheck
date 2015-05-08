@@ -1,7 +1,10 @@
 path = require 'path'
 fs = require 'fs'
 walk = require 'walk'
-rules = require './rules'
+Promise = require('promise')
+rules = require './rules/rules.coffee'
+readFile = Promise.denodeify fs.readFile
+
 
 exports.usage = ""
 
@@ -29,12 +32,15 @@ checkFiles = () ->
 
 fileHandler = (root, fileStat, next) ->
     filePath = path.resolve(root, fileStat.name)
-    scanFile(filePath)
-    next()
+    applyRules(filePath).then(next)
 
-# 扫描文件
-scanFile = (filePath) ->
-    rules.applyRules(filePath)
+
+# 应用规则
+applyRules = (filePath, next) ->
+    return readFile(filePath, 'utf-8').then((data) ->
+        rules.applyRules(data.toString())
+    )
+
 
 errorsHandler = (root, nodeStatsArray, next) ->
     nodeStatsArray.forEach((n) ->
@@ -45,5 +51,6 @@ errorsHandler = (root, nodeStatsArray, next) ->
 
 endHandler = () ->
     console.log 'check done'
+
 
 run()

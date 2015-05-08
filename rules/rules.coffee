@@ -5,12 +5,17 @@ KEYWORDS = [
     '.q-header'
 ]
 
-
-exports.checkProhibited = (content) ->
+exports.applyRules = (content) ->
+    # 检查禁用关键词
     checkKeywords(content, keyWord) for keyWord in KEYWORDS
 
+    # 检查z-index
+    checkZindex(content)
 
 checkKeywords = (content, keyWord) ->
     if ~content.indexOf(keyWord) isnt no
         console.error "#{keyWord} is keyWord"
         return
+
+checkZindex = (content) ->
+    
