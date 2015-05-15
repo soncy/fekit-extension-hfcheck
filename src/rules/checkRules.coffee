@@ -15,7 +15,9 @@ exports.applyRules = (filePath) ->
             ret = rule.check(filePath)
             if ret.length isnt 0
                 # console.log filePath
-                logger.error "#{filePath} 检测不通过， 原因：\n#{ret.join(;)} \n\n"
+                logger.error "#{filePath} 检测不通过， 原因：\n#{ret.join(;)} \n"
+            else
+                logger.log "#{filePath}检查通过 \n"
         )
 
 getSuffix = (fileName) ->

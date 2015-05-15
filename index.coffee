@@ -22,9 +22,11 @@ run = () ->
 
 # 检查文件
 checkFiles = (checkFolder) ->
-
     needCheckFolder = path.join(process.cwd(), checkFolder)
-    
+
+    if path.isAbsolute(checkFolder) is yes
+        needCheckFolder = checkFolder
+
     if fs.existsSync(needCheckFolder) is no
         logger.log "no the folder #{needCheckFolder}, none need check"
         return
@@ -38,7 +40,6 @@ fileHandler = (root, fileStat, next) ->
     filePath = path.resolve(root, fileStat.name)
     rules.applyRules(filePath)
     next()
-
 
 errorsHandler = (root, nodeStatsArray, next) ->
     nodeStatsArray.forEach((n) ->
