@@ -1,7 +1,9 @@
 fs = require 'fs'
 path = require 'path'
 uglifycss = require 'uglifycss'
-KEYWORDS = ['.q_header', '.qhf_']
+less = require 'less'
+
+KEYWORDS = ['.q_header', '.qhf_', 'q-header', 'qhf-']
 reg = /\}([\s\S]*?)\{/g
 mediaReg = /@media(.*?)\{(.*?)\}(.*?)\}/g
 legitimateStartWord = ['.', '#', '@', 'require']
@@ -10,23 +12,32 @@ errorMsg = []
 exports.check = (filePath) ->
     errorMsg = []
     fileName = path.basename(filePath)
-    suffix = getSuffix(fileName)
+    suffix = path.extname(fileName)
 
     switch suffix
-        when 'css' then checkCss filePath
+        when '.css' then checkCss filePath
+        when '.less' then checkLess filePath
 
     return {
-        ret: errorMsg.length is 0,
+        ret: errorMsg.length is 0
         errorMsg: errorMsg.join('\n')
     }    
 
-
+# 检查.css文件
 checkCss = (filePath) ->
-    
     content = fs.readFileSync(filePath, 'utf-8').toString()
     content = uglifycss.processString(content)
     styles = getStyles(content)
     checkSelector(styles)
+
+# 检查.less文件
+checkLess = (filePath) ->
+    content = fs.readFileSync(filePath, 'utf-8').toString()
+    less.render(content, (e, output) ->
+        con = uglifycss.processString(output.css)
+        styles = getStyles(con)
+        checkSelector(styles)
+    )
 
 
 # 获取所有selector
@@ -104,11 +115,3 @@ isTagName = (str) ->
             ret = no
     )
     return ret
-
-# 获取文件后缀
-getSuffix = (fileName) ->
-    arr = fileName.split('.')
-    len = arr.length
-    if len is 1
-        return null
-    return arr[len - 1]

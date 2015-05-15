@@ -5,6 +5,8 @@ walk = require 'walk'
 baselib = path.join( module.parent.filename , '../' )
 utils = require( path.join( baselib , 'util'  ) )
 rules = require './lib/rules/checkRules'
+findCssList = require './lib/tools/findCssList'
+
 logger = utils.logger
 
 exports.usage = "检查代码是否和header冲突及合规"
@@ -31,10 +33,22 @@ checkFiles = (checkFolder) ->
         logger.log "no the folder #{needCheckFolder}, none need check"
         return
     
-    walker = walk.walk(needCheckFolder, followLinks: false)
-    walker.on('file', fileHandler)
-    walker.on('end', endHandler)
-    walker.on('error', errorsHandler)
+    configUrl = path.join(process.cwd(), 'fekit.config')
+    
+    if fs.existsSync(configUrl) && checkFolder isnt 'prd'
+        try
+            config = JSON.parse(fs.readFileSync(configUrl, 'utf-8').toString())
+        catch e
+            logger.error 'fekit.config 解析错误，请注意检查是不是标准json'
+
+        findCssList(config.export, checkFolder, (filePath) ->
+            rules.applyRules(filePath)
+        )
+    else
+        walker = walk.walk(needCheckFolder, followLinks: false)
+        walker.on('file', fileHandler)
+        walker.on('end', endHandler)
+        walker.on('error', errorsHandler)
 
 fileHandler = (root, fileStat, next) ->
     filePath = path.resolve(root, fileStat.name)
