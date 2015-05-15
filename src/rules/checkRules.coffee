@@ -1,33 +1,20 @@
 path = require 'path'
-header = require './header'
+
 baselib = path.join( module.parent.parent.filename , '../' )
 utils = require( path.join( baselib , 'util'  ) )
 logger = utils.logger
 
+header = require './header'
+
 rules = [header]
 
 exports.applyRules = (filePath) ->
-    fileName = path.basename(filePath)
-    suffix = getSuffix(fileName)
+    
+    rules.forEach((rule) -> 
+        checkResult = rule.check(filePath)
 
-    if suffix is 'css'
-        rules.forEach((rule) -> 
-            ret = rule.check(filePath)
-            if ret.length isnt 0
-                # console.log filePath
-                logger.error "#{filePath} 检测不通过， 原因：\n#{ret.join(;)} \n"
-            else
-                logger.log "#{filePath}检查通过 \n"
-        )
-
-getSuffix = (fileName) ->
-    arr = fileName.split('.')
-    len = arr.length
-    if len is 1
-        return null
-    return arr[len - 1]
+        if checkResult.ret is no
+            logger.error "#{filePath} 检测不通过， 错误信息：\n#{checkResult.errorMsg} \n"
+    )
 
     
-
-
-

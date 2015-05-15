@@ -1,4 +1,5 @@
 fs = require 'fs'
+path = require 'path'
 uglifycss = require 'uglifycss'
 KEYWORDS = ['.q_header', '.qhf_']
 reg = /\}([\s\S]*?)\{/g
@@ -8,12 +9,25 @@ errorMsg = []
 
 exports.check = (filePath) ->
     errorMsg = []
+    fileName = path.basename(filePath)
+    suffix = getSuffix(fileName)
+
+    switch suffix
+        when 'css' then checkCss filePath
+
+    return {
+        ret: errorMsg.length is 0,
+        errorMsg: errorMsg.join('\n')
+    }    
+
+
+checkCss = (filePath) ->
+    
     content = fs.readFileSync(filePath, 'utf-8').toString()
     content = uglifycss.processString(content)
     styles = getStyles(content)
     checkSelector(styles)
-    
-    return errorMsg
+
 
 # 获取所有selector
 getStyles = (content) ->
@@ -82,6 +96,7 @@ isStartWithKeyword = (selector) ->
     )
     return ret
 
+# 是否是tagName
 isTagName = (str) ->
     ret = yes
     legitimateStartWord.forEach((word) ->
@@ -89,3 +104,11 @@ isTagName = (str) ->
             ret = no
     )
     return ret
+
+# 获取文件后缀
+getSuffix = (fileName) ->
+    arr = fileName.split('.')
+    len = arr.length
+    if len is 1
+        return null
+    return arr[len - 1]
