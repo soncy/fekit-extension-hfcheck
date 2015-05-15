@@ -1,12 +1,9 @@
 path = require 'path'
 fs = require 'fs'
 walk = require 'walk'
-Promise = require('promise')
-rules = require './rules/rules.coffee'
-readFile = Promise.denodeify fs.readFile
+rules = require './lib/rules/checkRules'
 
-
-exports.usage = ""
+exports.usage = "检查代码是否和header冲突及合规"
 
 exports.set_options = ( optimist ) ->
     return optimist
@@ -15,14 +12,17 @@ exports.run = ( options ) ->
     run()
 
 run = () ->
+    checkFolder = process.argv[3] or 'prd'
     console.log 'check header start'
-    checkFiles()
+    checkFiles(checkFolder)
 
 # 检查文件
-checkFiles = () ->
-    needCheckFolder = process.cwd() + '/prd/'
+checkFiles = (checkFolder) ->
+
+    needCheckFolder = path.join(process.cwd(), checkFolder)
+    
     if fs.existsSync(needCheckFolder) is no
-        console.log 'no prd, none need check'
+        console.log "no the folder #{needCheckFolder}, none need check"
         return
     
     walker = walk.walk(needCheckFolder, followLinks: false)
@@ -32,14 +32,8 @@ checkFiles = () ->
 
 fileHandler = (root, fileStat, next) ->
     filePath = path.resolve(root, fileStat.name)
-    applyRules(filePath).then(next)
-
-
-# 应用规则
-applyRules = (filePath) ->
-    return readFile(filePath, 'utf-8').then((data) ->
-        rules.applyRules(filePath, data.toString()).then(Promise.resolve())
-    )
+    rules.applyRules(filePath)
+    next()
 
 
 errorsHandler = (root, nodeStatsArray, next) ->
@@ -52,5 +46,3 @@ errorsHandler = (root, nodeStatsArray, next) ->
 endHandler = () ->
     console.log 'check done'
 
-
-run()
