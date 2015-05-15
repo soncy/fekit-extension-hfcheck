@@ -1,18 +1,17 @@
 fs = require 'fs'
 uglifycss = require 'uglifycss'
 KEYWORDS = ['.q_header', '.qhf_']
-STARTWORDS = ['@', 'require', '.', '#']
 reg = /\}([\s\S]*?)\{/g
 mediaReg = /@media(.*?)\{(.*?)\}(.*?)\}/g
+legitimateStartWord = ['.', '#', '@', 'require']
 errorMsg = []
 
 exports.check = (filePath) ->
     errorMsg = []
     content = fs.readFileSync(filePath, 'utf-8').toString()
     content = uglifycss.processString(content)
-    style = getStyles(content)
-    checkStartWord(style.classNames) 
-    checkTagName(style.originClass)
+    styles = getStyles(content)
+    checkSelector(styles)
     
     return errorMsg
 
@@ -21,9 +20,7 @@ getStyles = (content) ->
     content = parseMediaStyle(content)    
     firstClass = content.substr(0, content.indexOf('{')).split(';')
     
-    ret = 
-        classNames: {}
-        originClass: []
+    ret = []
 
     classNames = content.match(reg)
     if classNames is null
@@ -32,16 +29,7 @@ getStyles = (content) ->
     classNames = firstClass.concat(classNames)
     classNames.forEach((item) ->
         item = item.replace('{', '').replace('}', '')
-        ret.originClass.push(item)
-
-        arr = item.split(','); # 拆分 .a .b, .c .d
-        arr.forEach((cns) ->
-            arr1 = cns.split(' '); # 拆分.a .b
-            arr1.forEach((cn) ->
-                if !ret.classNames[cn] and cn.indexOf('.') is 0
-                    ret.classNames[cn] = 1
-            )
-        )
+        ret.push(item)
     )
     return ret
 
@@ -56,53 +44,48 @@ parseMediaStyle = (content) ->
     content = content.replace(/@(.*?);/g, '')
     return content
 
+checkSelector = (styles) ->
+
+    illegalSelector = []
+    illegalTagName = []
+
+    styles.forEach((styleLine) ->
+        styleLine.split(',').forEach((selectorLine) ->
+            selectors = selectorLine.split(' ')
+            namespace = selectors[0]
+
+            selectors.forEach((selector) ->
+                keyWordResult = isStartWithKeyword(selector)
+                isTag = isTagName(selector)
+
+                if keyWordResult is yes
+                    illegalSelector.push(selector)
+
+                if isTag is yes
+                    namespaceIsTagName = isTagName(namespace)
+
+                if namespaceIsTagName is yes
+                    illegalTagName.push(selector)
+            )
+        )
+    )
+
+    illegalSelector.length > 0 and errorMsg.push("#{illegalSelector.join(',')}是禁用样式")
+    illegalTagName.length > 0 and errorMsg.push("#{illegalTagName.join(',')}没有命名空间")
 
 # 检查selector开头是否合规
-checkStartWord = (classNames) ->
-    ret = yes
-    notLegitimateWord = []
-    for own item, value of classNames
-        if isStrartWithSpecial(item) is yes
-            if isStartWithKeyword(item) is yes
-                ret = no
-                notLegitimateWord.push item
-
-    if ret is no
-        errorMsg.push "#{notLegitimateWord.join(',')} 是禁用样式"
-    return ret
-
-# 检查selector开头是否合规
-isStartWithKeyword = (str) ->
+isStartWithKeyword = (selector) ->
     ret = no
     KEYWORDS.forEach((keyword) ->
-        if str.indexOf(keyword) is 0
+        if selector.indexOf(keyword) is 0
             ret = yes
     )
     return ret
 
-# 检查标签定义是否有命名空间
-checkTagName = (originClass) ->
+isTagName = (str) ->
     ret = yes
-    notLegitimateWord = []
-    originClass.forEach((styleLine) ->
-        arr = styleLine.split(',')
-        arr.forEach((style) ->
-            k = style.split(' ')
-            namespace = k[0]
-
-            for selector in k
-                if isStrartWithSpecial(selector) isnt yes
-                    if isStrartWithSpecial(namespace) isnt yes
-                        notLegitimateWord.push selector
-                        ret = no
-        )
-    )
-    if ret is no
-        errorMsg.push "#{notLegitimateWord.join(',')}没有命名空间"
-
-isStrartWithSpecial = (str) ->
-    ret = no
-    for word in STARTWORDS
+    legitimateStartWord.forEach((word) ->
         if str.indexOf(word) is 0
-            return true
+            ret = no
+    )
     return ret
