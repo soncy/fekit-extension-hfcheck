@@ -20,6 +20,7 @@ exports.check = (filePath) ->
 getStyles = (content) ->
     content = parseMediaStyle(content)    
     firstClass = content.substr(0, content.indexOf('{')).split(';')
+    
     ret = 
         classNames: {}
         originClass: []
@@ -52,6 +53,7 @@ parseMediaStyle = (content) ->
             firstLeftBrace = media.indexOf('{')
             lastRightBrace = media.lastIndexOf('}')
             content = content.replace(media, media.substring(firstLeftBrace + 1, lastRightBrace))
+    content = content.replace(/@(.*?);/g, '')
     return content
 
 
