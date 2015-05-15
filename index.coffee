@@ -1,7 +1,11 @@
 path = require 'path'
 fs = require 'fs'
 walk = require 'walk'
+
+baselib = path.join( module.parent.filename , '../' )
+utils = require( path.join( baselib , 'util'  ) )
 rules = require './lib/rules/checkRules'
+logger = utils.logger
 
 exports.usage = "检查代码是否和header冲突及合规"
 
@@ -13,7 +17,7 @@ exports.run = ( options ) ->
 
 run = () ->
     checkFolder = process.argv[3] or 'prd'
-    console.log 'check header start'
+    logger.log 'check header start'
     checkFiles(checkFolder)
 
 # 检查文件
@@ -22,7 +26,7 @@ checkFiles = (checkFolder) ->
     needCheckFolder = path.join(process.cwd(), checkFolder)
     
     if fs.existsSync(needCheckFolder) is no
-        console.log "no the folder #{needCheckFolder}, none need check"
+        logger.log "no the folder #{needCheckFolder}, none need check"
         return
     
     walker = walk.walk(needCheckFolder, followLinks: false)
@@ -38,11 +42,11 @@ fileHandler = (root, fileStat, next) ->
 
 errorsHandler = (root, nodeStatsArray, next) ->
     nodeStatsArray.forEach((n) ->
-        console.error("[ERROR] " + n.name)
-        console.error(n.error.message or (n.error.code + ": " + n.error.path))
+        logger.error("[ERROR] " + n.name)
+        logger.error(n.error.message or (n.error.code + ": " + n.error.path))
     )
     next()
 
 endHandler = () ->
-    console.log 'check done'
+    logger.log 'check done'
 

@@ -1,10 +1,12 @@
 path = require 'path'
 header = require './header'
+baselib = path.join( module.parent.parent.filename , '../' )
+utils = require( path.join( baselib , 'util'  ) )
+logger = utils.logger
 
 rules = [header]
 
 exports.applyRules = (filePath) ->
-    
     fileName = path.basename(filePath)
     suffix = getSuffix(fileName)
 
@@ -13,7 +15,7 @@ exports.applyRules = (filePath) ->
             ret = rule.check(filePath)
             if ret.length isnt 0
                 # console.log filePath
-                console.log "\n\n #{filePath} 检测不通过， 原因：\n#{ret.join(;)} \n\n"
+                logger.error "#{filePath} 检测不通过， 原因：\n#{ret.join(;)} \n\n"
         )
 
 getSuffix = (fileName) ->
