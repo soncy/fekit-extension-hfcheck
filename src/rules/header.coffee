@@ -2,6 +2,7 @@ fs = require 'fs'
 path = require 'path'
 uglifycss = require 'uglifycss'
 less = require 'less'
+sass = require 'node-sass'
 
 KEYWORDS = ['.q_header', '.qhf_', 'q-header', 'qhf-']
 reg = /\}([\s\S]*?)\{/g
@@ -17,6 +18,7 @@ exports.check = (filePath) ->
     switch suffix
         when '.css' then checkCss filePath
         when '.less' then checkLess filePath
+        when '.scss' then checkSass filePath
 
     return {
         ret: errorMsg.length is 0
@@ -38,6 +40,24 @@ checkLess = (filePath) ->
         styles = getStyles(con)
         checkSelector(styles)
     )
+
+# 检查.sass文件
+checkSass = (filePath) ->
+    content = fs.readFileSync(filePath, 'utf-8').toString()
+    # sass.render({
+    #     file: filePath,
+    # }, (e, result) ->
+    #     con = uglifycss.processString(result.css.toString())
+    #     console.log con
+    #     styles = getStyles(con)
+    #     checkSelector(styles)
+    # );
+    result = sass.renderSync({
+        file: filePath
+    })
+    con = uglifycss.processString(result.css.toString())
+    styles = getStyles(con)
+    checkSelector(styles)
 
 
 # 获取所有selector
