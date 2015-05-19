@@ -123,7 +123,7 @@ isStartWithKeyword = (selector) ->
 isTagName = (str) ->
     ret = yes
     legitimateStartWord.forEach((word) ->
-        if str.indexOf(word) is 0 and word.split('.').length > 0
+        if str.indexOf(word) is 0 or str.split('.').length > 1
             ret = no
     )
     return ret
