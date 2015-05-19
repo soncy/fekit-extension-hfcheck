@@ -44,14 +44,6 @@ checkLess = (filePath) ->
 # 检查.sass文件
 checkSass = (filePath) ->
     content = fs.readFileSync(filePath, 'utf-8').toString()
-    # sass.render({
-    #     file: filePath,
-    # }, (e, result) ->
-    #     con = uglifycss.processString(result.css.toString())
-    #     console.log con
-    #     styles = getStyles(con)
-    #     checkSelector(styles)
-    # );
     result = sass.renderSync({
         file: filePath
     })
@@ -131,7 +123,7 @@ isStartWithKeyword = (selector) ->
 isTagName = (str) ->
     ret = yes
     legitimateStartWord.forEach((word) ->
-        if str.indexOf(word) is 0
+        if str.indexOf(word) is 0 and word.split('.').length > 0
             ret = no
     )
     return ret

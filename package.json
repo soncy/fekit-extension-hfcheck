@@ -1,11 +1,13 @@
 {
   "fekit_extension_command_name": "hfcheck",
   "name": "fekit-extension-hfcheck",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "dependencies": {
     "walk": "^2.3.9",
-    "uglifycss": "^0.0.15"
+    "uglifycss": "^0.0.15",
+    "less": "^2.5.0",
+    "node-sass": "^3.1"
   },
   "main": "index.js",
   "scripts": {
