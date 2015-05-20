@@ -9,9 +9,12 @@ reg = /\}([\s\S]*?)\{/g
 mediaReg = /@media(.*?)\{(.*?)\}(.*?)\}/g
 legitimateStartWord = ['.', '#', '@', 'require']
 errorMsg = []
+warningMsg = []
 
 exports.check = (filePath) ->
     errorMsg = []
+    warningMsg = []
+
     fileName = path.basename(filePath)
     suffix = path.extname(fileName)
 
@@ -21,8 +24,9 @@ exports.check = (filePath) ->
         when '.scss' then checkSass filePath
 
     return {
-        ret: errorMsg.length is 0
+        ret: errorMsg.length is 0 and warningMsg.length is 0
         errorMsg: errorMsg.join('\n')
+        warningMsg: warningMsg.join('\n')
     }    
 
 # 检查.css文件
@@ -108,7 +112,7 @@ checkSelector = (styles) ->
     )
 
     illegalSelector.length > 0 and errorMsg.push("#{illegalSelector.join(',')}是禁用样式")
-    illegalTagName.length > 0 and errorMsg.push("#{illegalTagName.join(',')}没有命名空间")
+    illegalTagName.length > 0 and warningMsg.push("#{illegalTagName.join(',')}没有命名空间")
 
 # 检查selector开头是否合规
 isStartWithKeyword = (selector) ->
