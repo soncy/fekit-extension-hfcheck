@@ -21,25 +21,19 @@ findFilePath = (filePath, callback) ->
     if fs.existsSync(filePath)
         content = fs.readFileSync(filePath, 'utf-8').toString()
 
-        requireList = content.match(requireReg)
-        if requireList isnt null
-            requireList.forEach((item) ->
-                file = item.replace(requireReg, '$2').replace(/["']/g, '')
-                childFilePath = path.resolve(dirname, file)
-                callback(childFilePath)
-                if isCssFile(childFilePath)
-                    findFilePath(childFilePath, callback)
-            )
+        findChildList = (reg) ->
+            list = content.match(reg)
+            if list isnt null
+                list.forEach((item) ->
+                    file = item.replace(reg, '$2').replace(/["']/g, '')
+                    childFilePath = path.resolve(dirname, file)
+                    if isCssFile(childFilePath)
+                        callback(childFilePath)
+                        findFilePath(childFilePath, callback)
+                )
 
-        importList = content.match(importReg)
-        if importList isnt null
-            importList.forEach((item) ->
-                file = item.replace(importReg, '$2').replace(/["']/g, '')
-                childFilePath = path.resolve(dirname, file)
-                callback(childFilePath)
-                if isCssFile(childFilePath)
-                    findFilePath(childFilePath, callback)
-            )
+        findChildList(requireReg)
+        findChildList(importReg)
 
 isCssFile = (filePath) ->
     return isSomeTypeFile(filePath, '.css')
@@ -52,5 +46,5 @@ isSassFile = (filePath) ->
 
 isSomeTypeFile = (filePath, suffix) ->
     basename = path.basename filePath
-    suffix = path.extname basename
-    return suffix is suffix
+    currentSuffix = path.extname basename
+    return currentSuffix is suffix
