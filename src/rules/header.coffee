@@ -7,7 +7,7 @@ sass = require 'node-sass'
 KEYWORDS = ['.q_header', '.qhf_', 'q-header', 'qhf-']
 reg = /\}([\s\S]*?)\{/g
 mediaReg = /@media(.*?)\{(.*?)\}(.*?)\}/g
-legitimateStartWord = ['.', '#', '@', 'require']
+legitimateStartWord = ['.', '#', '@', 'require', '::']
 errorMsg = []
 warningMsg = []
 
@@ -95,6 +95,10 @@ checkSelector = (styles) ->
             selectors = selectorLine.split(' ')
             namespace = selectors[0]
 
+            # 如果是:root开头的则检查root后一个selector
+            if isBeginwithRoot(selectorLine)
+                namespace = selectors[1] || selectors[0]
+
             selectors.forEach((selector) ->
                 keyWordResult = isStartWithKeyword(selector)
                 isTag = isTagName(selector)
@@ -126,8 +130,13 @@ isStartWithKeyword = (selector) ->
 # 是否是tagName
 isTagName = (str) ->
     ret = yes
+
     legitimateStartWord.forEach((word) ->
         if str.indexOf(word) is 0 or str.split('.').length > 1
             ret = no
     )
     return ret
+
+# :root开头的特殊处理
+isBeginwithRoot = (str) ->
+    return str.indexOf(':root') is 0;
