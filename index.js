@@ -53,9 +53,10 @@
         e = _error;
         logger.error('fekit.config 解析错误，请注意检查是不是标准json');
       }
-      return findCssList(config["export"], checkFolder, function(filePath) {
+      findCssList(config["export"], checkFolder, function(filePath) {
         return rules.applyRules(filePath);
       });
+      return console.log('check done');
     } else {
       walker = walk.walk(needCheckFolder, {
         followLinks: false

@@ -116,7 +116,7 @@ checkSelector = (styles) ->
     )
 
     illegalSelector.length > 0 and errorMsg.push("#{illegalSelector.join(',')}是禁用样式")
-    illegalTagName.length > 0 and warningMsg.push("#{illegalTagName.join(',')}没有命名空间，请在2015年8月1日之前完成修改")
+    illegalTagName.length > 0 and warningMsg.push("#{illegalTagName.join(',')}没有命名空间，请在2015年7月1日之前完成修改")
 
 # 检查selector开头是否合规
 isStartWithKeyword = (selector) ->

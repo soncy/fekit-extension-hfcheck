@@ -4,6 +4,8 @@ path = require 'path'
 requireReg = /require( ?)\((.*)\)/g
 importReg = /@import(.*?)[\("'](.*)['"\)]/g
 
+listCache = {}
+
 module.exports = (list, folder, callback) ->
     list.forEach((filePath) ->
         filePath = path.join(process.cwd(), folder, filePath)
@@ -14,6 +16,8 @@ module.exports = (list, folder, callback) ->
 
         if isLessFile(filePath) or isSassFile(filePath)
             callback(filePath)
+
+        listCache[filePath] = 1
     )
 
 findFilePath = (filePath, callback) ->
@@ -27,8 +31,9 @@ findFilePath = (filePath, callback) ->
                 list.forEach((item) ->
                     file = item.replace(reg, '$2').replace(/["']/g, '')
                     childFilePath = path.resolve(dirname, file)
-                    if isCssFile(childFilePath)
+                    if isCssFile(childFilePath) and listCache[childFilePath] isnt 1
                         callback(childFilePath)
+                        listCache[childFilePath] = 1
                         findFilePath(childFilePath, callback)
                 )
 

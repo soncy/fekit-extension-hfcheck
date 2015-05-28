@@ -44,6 +44,7 @@ checkFiles = (checkFolder) ->
         findCssList(config.export, checkFolder, (filePath) ->
             rules.applyRules(filePath)
         )
+        console.log 'check done'
     else
         walker = walk.walk(needCheckFolder, followLinks: false)
         walker.on('file', fileHandler)
