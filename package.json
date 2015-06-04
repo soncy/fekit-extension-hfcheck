@@ -1,7 +1,7 @@
 {
   "fekit_extension_command_name": "hfcheck",
   "name": "fekit-extension-hfcheck",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "header样式检查",
   "dependencies": {
     "walk": "^2.3.9",
