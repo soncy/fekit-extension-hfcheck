@@ -38,9 +38,6 @@
   checkFiles = function(checkFolder) {
     var config, configUrl, e, needCheckFolder, walker;
     needCheckFolder = path.join(process.cwd(), checkFolder);
-    if (path.isAbsolute(checkFolder) === true) {
-      needCheckFolder = checkFolder;
-    }
     if (fs.existsSync(needCheckFolder) === false) {
       logger.log("no the folder " + needCheckFolder + ", none need check");
       return;

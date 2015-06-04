@@ -51,5 +51,7 @@ isSassFile = (filePath) ->
 
 isSomeTypeFile = (filePath, suffix) ->
     basename = path.basename filePath
+    if basename.indexOf 'touch-reset' is 0
+        return false;
     currentSuffix = path.extname basename
     return currentSuffix is suffix
