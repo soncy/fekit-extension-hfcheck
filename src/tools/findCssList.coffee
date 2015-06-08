@@ -31,7 +31,7 @@ findFilePath = (filePath, callback) ->
                 list.forEach((item) ->
                     file = item.replace(reg, '$2').replace(/["']/g, '')
                     childFilePath = path.resolve(dirname, file)
-                    if (isCssFile(filePath) ) and listCache[childFilePath] isnt 1
+                    if (isCssFile(filePath) and !isBeginWithTouch(childFilePath)) and listCache[childFilePath] isnt 1
                         callback(childFilePath)
                         listCache[childFilePath] = 1
                         findFilePath(childFilePath, callback)
@@ -49,9 +49,11 @@ isLessFile = (filePath) ->
 isSassFile = (filePath) ->
     return isSomeTypeFile(filePath, '.scss')
 
+isBeginWithTouch = (filePath) ->
+    basename = path.basename filePath
+    return basename.indexOf('touch-reset') is 0
+
 isSomeTypeFile = (filePath, suffix) ->
     basename = path.basename filePath
-    if basename.indexOf('touch-reset') is 0
-        return false;
     currentSuffix = path.extname basename
     return currentSuffix is suffix
