@@ -2,7 +2,7 @@ fs = require 'fs'
 path = require 'path'
 
 requireReg = /require( ?)\((.*)\)/g
-importReg = /@import(.*?)[\("'](.*)['"\)]/g
+importReg = /@import(.*?)[\("'](.*)['"|\)]/g
 
 listCache = {}
 
@@ -31,7 +31,7 @@ findFilePath = (filePath, callback) ->
                 list.forEach((item) ->
                     file = item.replace(reg, '$2').replace(/["']/g, '')
                     childFilePath = path.resolve(dirname, file)
-                    if isCssFile(childFilePath) and listCache[childFilePath] isnt 1
+                    if (isCssFile(filePath) ) and listCache[childFilePath] isnt 1
                         callback(childFilePath)
                         listCache[childFilePath] = 1
                         findFilePath(childFilePath, callback)
