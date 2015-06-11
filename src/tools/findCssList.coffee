@@ -13,6 +13,9 @@ module.exports = (fekitConfig, folder, callback) ->
     alias = fekitConfig.alias
 
     list.forEach((filePath) ->
+        if filePath.path
+            filePath = filePath.path
+
         filePath = path.join(process.cwd(), folder, filePath)
 
         if isCssFile(filePath)

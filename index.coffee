@@ -24,6 +24,7 @@ run = () ->
 
 # 检查文件
 checkFiles = (checkFolder) ->
+
     needCheckFolder = path.join(process.cwd(), checkFolder)
 
     if fs.existsSync(needCheckFolder) is no
