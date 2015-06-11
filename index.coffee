@@ -38,7 +38,7 @@ checkFiles = (checkFolder) ->
         catch e
             logger.error 'fekit.config 解析错误，请注意检查是不是标准json'
 
-        findCssList(config.export, checkFolder, (filePath) ->
+        findCssList(config, checkFolder, (filePath) ->
             rules.applyRules(filePath)
         )
         console.log 'check done'

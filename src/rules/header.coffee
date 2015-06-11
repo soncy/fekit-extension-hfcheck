@@ -6,7 +6,7 @@ sass = require 'node-sass'
 
 KEYWORDS = ['.q_header', '.qhf_', 'q-header', 'qhf-']
 reg = /\}([\s\S]*?)\{/g
-mediaReg = /@media(.*?)\{(.*?)\}(.*?)\}/g
+mediaReg = /@(.*?)\{(.*?)\}\}/g
 legitimateStartWord = ['.', '#', '@', 'require', '::']
 errorMsg = []
 warningMsg = []
@@ -62,28 +62,28 @@ getStyles = (content) ->
     firstClass = content.substr(0, content.indexOf('{')).split(';')
     
     ret = []
-
     classNames = content.match(reg)
+
     if classNames is null
         return ret
 
     classNames = firstClass.concat(classNames)
     classNames.forEach((item) ->
-        item = item.replace('{', '').replace('}', '')
+        item = item.replace(/\{/g, '').replace(/\}/g, '')
         ret.push(item)
     )
     return ret
 
 # 获取media中的样式
 parseMediaStyle = (content) ->
-    mediaStyles = content.match(mediaReg)
-    if mediaStyles isnt null
-        for media in mediaStyles
-            firstLeftBrace = media.indexOf('{')
-            lastRightBrace = media.lastIndexOf('}')
-            content = content.replace(media, media.substring(firstLeftBrace + 1, lastRightBrace))
-    content = content.replace(/@(.*?);/g, '')
-    return content
+    # mediaStyles = content.match(mediaReg)
+    # if mediaStyles isnt null
+    #     for media in mediaStyles
+    #         firstLeftBrace = media.indexOf('{')
+    #         lastRightBrace = media.lastIndexOf('}')
+    #         content = content.replace(media, media.substring(firstLeftBrace + 1, lastRightBrace))
+    # content = content.replace(/@media(.*?);/g, '')
+    return content.replace(mediaReg, '')
 
 checkSelector = (styles) ->
 

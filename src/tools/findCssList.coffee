@@ -5,8 +5,13 @@ requireReg = /require( ?)\((.*)\)/g
 importReg = /@import(.*?)[\("'](.*)['"|\)]/g
 
 listCache = {}
+alias = {}
 
-module.exports = (list, folder, callback) ->
+module.exports = (fekitConfig, folder, callback) ->
+
+    list = fekitConfig.export
+    alias = fekitConfig.alias
+
     list.forEach((filePath) ->
         filePath = path.join(process.cwd(), folder, filePath)
 
@@ -30,7 +35,18 @@ findFilePath = (filePath, callback) ->
             if list isnt null
                 list.forEach((item) ->
                     file = item.replace(reg, '$2').replace(/["']/g, '')
-                    childFilePath = path.resolve(dirname, file)
+                    folders = file.split(path.sep)
+
+                    firstFolder = folders[0]
+
+                    if alias[firstFolder]
+                        folders[0] = alias[firstFolder]
+                        childFilePath = ''
+                        folders.forEach((f) ->
+                            childFilePath = path.join(childFilePath, f)
+                        )
+                    else
+                        childFilePath = path.resolve(dirname, file)
                     if (isCssFile(filePath) and !isBeginWithTouch(childFilePath)) and listCache[childFilePath] isnt 1
                         callback(childFilePath)
                         listCache[childFilePath] = 1
