@@ -38,7 +38,7 @@ findFilePath = (filePath, callback) ->
             if list isnt null
                 list.forEach((item) ->
                     file = item.replace(reg, '$2').replace(/["']/g, '')
-                    folders = file.split(path.sep)
+                    folders = file.split('/')
 
                     firstFolder = folders[0]
 
