@@ -51,7 +51,7 @@ checkSass = (filePath) ->
     result = sass.renderSync({
         file: filePath
     })
-    con = uglifycss.processString(result.css.toString())
+    con = uglifycss.processString(result.css.toString()).replace('@charset "UTF-8";', '')
     styles = getStyles(con)
     checkSelector(styles)
 
