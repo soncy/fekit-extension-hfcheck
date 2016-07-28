@@ -2,7 +2,7 @@ fs = require 'fs'
 path = require 'path'
 uglifycss = require 'uglifycss'
 less = require 'less'
-sass = require 'node-sass'
+sass = require 'node-sass-china'
 
 KEYWORDS = ['.q_header', '.qhf_', 'q-header', 'qhf-']
 reg = /\}([\s\S]*?)\{/g
@@ -27,7 +27,7 @@ exports.check = (filePath) ->
         ret: errorMsg.length is 0 and warningMsg.length is 0
         errorMsg: errorMsg.join('\n')
         warningMsg: warningMsg.join('\n')
-    }    
+    }
 
 # 检查.css文件
 checkCss = (filePath) ->
@@ -58,9 +58,9 @@ checkSass = (filePath) ->
 
 # 获取所有selector
 getStyles = (content) ->
-    content = parseMediaStyle(content)    
+    content = parseMediaStyle(content)
     firstClass = content.substr(0, content.indexOf('{')).split(';')
-    
+
     ret = []
     classNames = content.match(reg)
 
